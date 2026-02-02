@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const loginUser = async (credentials) => {
     const { data, error } = await supabase.auth.signInWithPassword({
