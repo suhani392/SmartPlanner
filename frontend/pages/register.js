@@ -13,8 +13,8 @@ export default function Register() {
         try {
             const result = await registerUser(formData);
             if (result.id) {
-                localStorage.setItem('user', JSON.stringify({ email: formData.email, username: formData.username }));
-                localStorage.setItem('userId', result.id.toString());
+                sessionStorage.setItem('user', JSON.stringify({ email: formData.email, username: formData.username }));
+                sessionStorage.setItem('userId', result.id.toString());
                 alert("Registration Successful!");
                 router.push('/dashboard');
             } else {
@@ -36,7 +36,7 @@ export default function Register() {
                             <label>Username</label>
                             <input
                                 type="text"
-                                placeholder="johndoe"
+                                placeholder="John Doe"
                                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                 required
                                 style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid var(--border)' }}
@@ -46,7 +46,7 @@ export default function Register() {
                             <label>Email</label>
                             <input
                                 type="email"
-                                placeholder="example@mail.com"
+                                placeholder="john@example.com"
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 required
                                 style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid var(--border)' }}
@@ -56,7 +56,7 @@ export default function Register() {
                             <label>Password</label>
                             <input
                                 type="password"
-                                placeholder="••••••••"
+                                placeholder="john123"
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 required
                                 style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid var(--border)' }}

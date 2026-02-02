@@ -1,14 +1,22 @@
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'smart_planner',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
-module.exports = pool.promise();
+// Helper to mimic mysql2's [rows] destructuring for SELECT queries
+// Note: This only works for queries that return rows. 
+// For INSERT/UPDATE, pg returns a result object.
+module.exports = {
+    execute: async (text, params) => {
+        const res = await pool.query(text, params);
+        // If it's an INSERT/UPDATE/DELETE, we might need different return values
+        // but to minimize controller changes, we'll return [res.rows, res]
+        return [res.rows, res];
+    },
+    query: (text, params) => pool.query(text, params)
+};

@@ -6,7 +6,7 @@ exports.generateUserTimetable = async (req, res) => {
     try {
         // 1. Fetch user tasks
         const [tasks] = await db.execute(
-            'SELECT * FROM tasks WHERE user_id = ? AND status != "Completed"',
+            'SELECT * FROM tasks WHERE user_id = $1 AND status != \'Completed\'',
             [userId]
         );
 
@@ -15,14 +15,14 @@ exports.generateUserTimetable = async (req, res) => {
 
         // 3. Save to database (Overwrites previous plan for simplicity)
         // Check if plan exists
-        const [existing] = await db.execute('SELECT id FROM generated_plans WHERE user_id = ?', [userId]);
+        const [existing] = await db.execute('SELECT id FROM generated_plans WHERE user_id = $1', [userId]);
 
         const jsonData = JSON.stringify(groupedData);
 
         if (existing.length > 0) {
-            await db.execute('UPDATE generated_plans SET plan_data = ? WHERE user_id = ?', [jsonData, userId]);
+            await db.execute('UPDATE generated_plans SET plan_data = $1 WHERE user_id = $2', [jsonData, userId]);
         } else {
-            await db.execute('INSERT INTO generated_plans (user_id, plan_data) VALUES (?, ?)', [userId, jsonData]);
+            await db.execute('INSERT INTO generated_plans (user_id, plan_data) VALUES ($1, $2)', [userId, jsonData]);
         }
 
         res.json({

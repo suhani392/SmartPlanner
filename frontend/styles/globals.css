@@ -15,6 +15,11 @@ body {
   color: var(--text);
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -23,19 +28,101 @@ body {
 
 .navbar {
   background: var(--card-bg);
-  padding: 1rem 2rem;
+  padding: 0.75rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color 0.2s, transform 0.2s;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.register-btn {
+  background: var(--primary);
+  color: white !important;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+
+.register-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: #ef4444;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .card {
   background: var(--card-bg);
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  display: block;
+}
+
+input,
+select,
+textarea {
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border) !important;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .btn {

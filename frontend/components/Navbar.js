@@ -1,46 +1,57 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         setIsLoggedIn(!!user);
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('userId');
         window.location.href = '/';
     };
 
     return (
         <nav className="navbar">
             <div className="logo">
-                <Link href="/">
+                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img
+                        src={logo.src || logo}
+                        alt="Logo"
+                        style={{
+                            width: '50px',
+                            height: '50px',
+                            borderRadius: '80%',
+                            objectFit: 'cover'
+                        }}
+                    />
                     <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', cursor: 'pointer' }}>
                         SmartPlanner
                     </span>
                 </Link>
             </div>
-            <div className="links">
+            <div className="nav-links">
                 {isLoggedIn ? (
                     <>
-                        <Link href="/dashboard" style={{ margin: '0 10px' }}>Dashboard</Link>
-                        <Link href="/tasks" style={{ margin: '0 10px' }}>Tasks</Link>
-                        <Link href="/timetable" style={{ margin: '0 10px' }}>Planner</Link>
+                        <Link href="/dashboard" className="nav-link">Dashboard</Link>
+                        <Link href="/tasks" className="nav-link">Tasks</Link>
+                        <Link href="/timetable" className="nav-link">Planner</Link>
                         <button
                             onClick={handleLogout}
-                            style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer', marginLeft: '20px', fontWeight: 'bold' }}
+                            className="logout-btn"
                         >
                             Logout
                         </button>
                     </>
                 ) : (
                     <>
-                        <Link href="/login" style={{ margin: '0 10px' }}>Login</Link>
-                        <Link href="/register" style={{ marginLeft: '10px', fontWeight: 'bold' }}>Register</Link>
+                        <Link href="/login" className="nav-link">Login</Link>
+                        <Link href="/register" className="register-btn">Register</Link>
                     </>
                 )}
             </div>

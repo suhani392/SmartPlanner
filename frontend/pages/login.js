@@ -14,8 +14,8 @@ export default function Login() {
         try {
             const result = await loginUser({ email, password });
             if (result.id) {
-                localStorage.setItem('user', JSON.stringify({ email: result.email, username: result.username }));
-                localStorage.setItem('userId', result.id.toString());
+                sessionStorage.setItem('user', JSON.stringify({ email: result.email, username: result.username }));
+                sessionStorage.setItem('userId', result.id.toString());
                 router.push('/dashboard');
             } else {
                 alert(result.error || "Invalid login credentials");
@@ -38,7 +38,7 @@ export default function Login() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="example@mail.com"
+                                placeholder="john@example.com"
                                 required
                                 style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid var(--border)' }}
                             />
@@ -49,7 +49,7 @@ export default function Login() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
+                                placeholder="john123"
                                 required
                                 style={{ padding: '0.8rem', borderRadius: '6px', border: '1px solid var(--border)' }}
                             />

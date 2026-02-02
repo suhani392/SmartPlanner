@@ -14,9 +14,19 @@ export default function Home() {
                     The perfect tool for busy students and professionals.
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-                    <button className="btn" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>Get Started Free</button>
-                    <button className="btn" style={{ background: 'white', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}>
-                        Learn More
+                    <button
+                        className="btn"
+                        style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}
+                        onClick={() => window.location.href = '/register'}
+                    >
+                        Get Started Free
+                    </button>
+                    <button
+                        className="btn"
+                        style={{ background: 'white', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}
+                        onClick={() => window.location.href = '/login'}
+                    >
+                        Login
                     </button>
                 </div>
             </main>

@@ -9,23 +9,47 @@ export default function Dashboard() {
     const [userName, setUserName] = useState('User');
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        if (user.email) setUserName(user.email.split('@')[0]);
+        const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
+        // Use username if available, otherwise use email prefix
+        const rawName = user.username || (user.email ? user.email.split('@')[0] : 'User');
+
+        // Capitalize the first letter and handle cases like "suhani.badhe" or "suhani_badhe"
+        const displayName = rawName.split(/[\._ ]/)[0]; // Get the first part before dot, underscore or space
+        const capitalized = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
+
+        setUserName(capitalized);
         loadDashboardData();
     }, []);
+
+    const [allTasks, setAllTasks] = useState([]);
 
     const loadDashboardData = async () => {
         try {
             const data = await fetchTasks();
-            // Ensure data is an array before calling slice
             if (Array.isArray(data)) {
-                setTasks(data.slice(0, 5));
+                setAllTasks(data);
+
+                // Sort tasks by date and time
+                const sorted = [...data].sort((a, b) => {
+                    const dateA = new Date(a.deadline);
+                    const dateB = new Date(b.deadline);
+                    if (dateA - dateB !== 0) return dateA - dateB;
+
+                    // If same day, sort by start_time
+                    const timeA = a.start_time || '23:59';
+                    const timeB = b.start_time || '23:59';
+                    return timeA.localeCompare(timeB);
+                });
+
+                setTasks(sorted.slice(0, 5));
             } else {
+                setAllTasks([]);
                 setTasks([]);
             }
         } catch (err) {
             console.error("Dashboard error:", err);
+            setAllTasks([]);
             setTasks([]);
         } finally {
             setLoading(false);
@@ -48,10 +72,10 @@ export default function Dashboard() {
                     </section>
 
                     <section className="card" style={{ height: 'fit-content' }}>
-                        <h2>Today's Summary</h2>
+                        <h2>Planner's Summary</h2>
                         <div style={{ marginBottom: '1rem' }}>
-                            <p><strong>Total Pending:</strong> {tasks.length}</p>
-                            <p><strong>High Priority:</strong> {tasks.filter(t => t.priority === 'High').length}</p>
+                            <p><strong>Total Tasks:</strong> {allTasks.length}</p>
+                            <p><strong>High Priority:</strong> {allTasks.filter(t => t.priority === 'High').length}</p>
                         </div>
                         <button
                             className="btn"

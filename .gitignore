@@ -1,5 +1,24 @@
-node_modules/
-.env
-.next/
-dist/
-build/
+# Dependencies
+**/node_modules/
+
+# Next.js Build Output
+**/.next/
+**/out/
+
+# Environment Variables (CRITICAL)
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Build Output
+**/dist/
+**/build/
+
+# IDE & System Files
+.vscode/
+.idea/
+.DS_Store
+*.log
+Thumbs.db

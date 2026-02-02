@@ -10,7 +10,7 @@ export default function Timetable() {
     useEffect(() => {
         const loadTimetable = async () => {
             try {
-                const userId = localStorage.getItem('userId') || 1;
+                const userId = sessionStorage.getItem('userId') || 1;
                 const result = await generateTimetable(userId);
                 setTimetableData(result.slots || []);
             } catch (err) {
@@ -33,10 +33,6 @@ export default function Timetable() {
                 </p>
 
                 {loading ? <p>Generating your planner...</p> : <TimetableGrid data={timetableData} />}
-
-                <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-                    <button className="btn" onClick={() => window.print()}>Download / Print PDF</button>
-                </div>
             </main>
         </div>
     );

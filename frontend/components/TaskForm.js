@@ -7,86 +7,143 @@ export default function TaskForm({ onAdd }) {
         deadline: '',
         priority: 'Medium',
         category: 'College',
-        estimated_hours: 1
+        time_type: 'NA', // NA, Estimated, Fixed
+        estimated_hours: 1,
+        start_time: '',
+        end_time: ''
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         onAdd(formData);
-        setFormData({ title: '', description: '', deadline: '', priority: 'Medium', category: 'College', estimated_hours: 1 });
+        setFormData({
+            title: '', description: '', deadline: '', priority: 'Medium',
+            category: 'College', time_type: 'NA', estimated_hours: 1,
+            start_time: '', end_time: ''
+        });
     };
 
     return (
         <div className="card">
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div>
                     <label>Title</label>
                     <input
                         type="text"
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         required
-                        style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
+                        placeholder="What needs to be done?"
                     />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div>
                     <label>Description</label>
                     <textarea
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
+                        placeholder="Add more details..."
+                        rows="3"
                     />
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '200px' }}>
                         <label>Deadline</label>
                         <input
                             type="date"
                             value={formData.deadline}
                             onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                             required
-                            style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
                         />
                     </div>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                        <label>Est. Hours</label>
-                        <input
-                            type="number"
-                            value={formData.estimated_hours}
-                            onChange={(e) => setFormData({ ...formData, estimated_hours: e.target.value })}
-                            min="1"
-                            required
-                            style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
-                        />
+                    <div style={{ flex: 1, minWidth: '200px' }}>
+                        <label>Time Scheduling</label>
+                        <select
+                            value={formData.time_type}
+                            onChange={(e) => setFormData({ ...formData, time_type: e.target.value })}
+                        >
+                            <option value="NA">Not Applicable</option>
+                            <option value="Estimated">Estimated Duration + Start</option>
+                            <option value="Fixed">Specific Start & End Time</option>
+                        </select>
                     </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label>Category</label>
-                    <select
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
-                    >
-                        <option>Deadline</option>
-                        <option>Exam</option>
-                        <option>Internship</option>
-                        <option>Project</option>
-                        <option>College</option>
-                    </select>
+
+                {formData.time_type !== 'NA' && (
+                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', background: 'rgba(0,0,0,0.02)', padding: '1rem', borderRadius: '8px', border: '1px dashed var(--border)' }}>
+                        {formData.time_type === 'Estimated' && (
+                            <>
+                                <div style={{ flex: 1 }}>
+                                    <label>Start Time</label>
+                                    <input
+                                        type="time"
+                                        value={formData.start_time}
+                                        onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>Duration (Hours)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.estimated_hours}
+                                        onChange={(e) => setFormData({ ...formData, estimated_hours: e.target.value })}
+                                        min="1"
+                                        required
+                                    />
+                                </div>
+                            </>
+                        )}
+                        {formData.time_type === 'Fixed' && (
+                            <>
+                                <div style={{ flex: 1 }}>
+                                    <label>Start Time</label>
+                                    <input
+                                        type="time"
+                                        value={formData.start_time}
+                                        onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>End Time</label>
+                                    <input
+                                        type="time"
+                                        value={formData.end_time}
+                                        onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <div style={{ flex: 1 }}>
+                        <label>Category</label>
+                        <select
+                            value={formData.category}
+                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        >
+                            <option>Deadline</option>
+                            <option>Exam</option>
+                            <option>Internship</option>
+                            <option>Project</option>
+                            <option>College</option>
+                        </select>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <label>Priority</label>
+                        <select
+                            value={formData.priority}
+                            onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                        >
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                    </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label>Priority</label>
-                    <select
-                        value={formData.priority}
-                        onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                        style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border)' }}
-                    >
-                        <option>High</option>
-                        <option>Medium</option>
-                        <option>Low</option>
-                    </select>
-                </div>
-                <button type="submit" className="btn">Add Task</button>
+                <button type="submit" className="btn" style={{ marginTop: '0.5rem' }}>Add Task</button>
             </form>
         </div>
     );
