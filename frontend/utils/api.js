@@ -63,8 +63,9 @@ export const registerUser = async (userData) => {
     return { id: data.user.id, message: 'User registered successfully' };
 };
 
-export const fetchTasks = async () => {
-    const response = await fetch(`${API_URL}/tasks`);
+export const fetchTasks = async (userId) => {
+    const url = userId ? `${API_URL}/tasks?userId=${userId}` : `${API_URL}/tasks`;
+    const response = await fetch(url);
     return response.json();
 };
 

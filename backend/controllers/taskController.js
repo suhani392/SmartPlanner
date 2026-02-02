@@ -20,8 +20,17 @@ const refreshTimetable = async (userId) => {
 };
 
 exports.getAllTasks = async (req, res) => {
+    const { userId } = req.query;
     try {
-        const [rows] = await db.execute('SELECT * FROM tasks');
+        let query = 'SELECT * FROM tasks';
+        let params = [];
+
+        if (userId) {
+            query += ' WHERE user_id = $1';
+            params = [userId];
+        }
+
+        const [rows] = await db.execute(query, params);
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });

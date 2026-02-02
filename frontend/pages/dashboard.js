@@ -24,9 +24,41 @@ export default function Dashboard() {
 
     const [allTasks, setAllTasks] = useState([]);
 
+    const loadTasks = async () => {
+        try {
+            const userId = sessionStorage.getItem('userId');
+            const data = await fetchTasks(userId);
+            if (Array.isArray(data)) {
+                setAllTasks(data);
+
+                // Sort tasks by date and time
+                const sorted = [...data].sort((a, b) => {
+                    const dateA = new Date(a.deadline);
+                    const dateB = new Date(b.deadline);
+                    if (dateA - dateB !== 0) return dateA - dateB;
+
+                    // If same day, sort by start_time
+                    const timeA = a.start_time || '23:59';
+                    const timeB = b.start_time || '23:59';
+                    return timeA.localeCompare(timeB);
+                });
+
+                setTasks(sorted.slice(0, 5));
+            } else {
+                setAllTasks([]);
+                setTasks([]);
+            }
+        } catch (err) {
+            console.error("Error loading tasks:", err);
+            setAllTasks([]);
+            setTasks([]);
+        }
+    };
+
     const loadDashboardData = async () => {
         try {
-            const data = await fetchTasks();
+            const userId = sessionStorage.getItem('userId');
+            const data = await fetchTasks(userId);
             if (Array.isArray(data)) {
                 setAllTasks(data);
 

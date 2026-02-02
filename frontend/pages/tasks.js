@@ -14,7 +14,8 @@ export default function Tasks() {
 
     const loadTasks = async () => {
         try {
-            const data = await fetchTasks();
+            const userId = sessionStorage.getItem('userId');
+            const data = await fetchTasks(userId);
             if (Array.isArray(data)) {
                 setTasks(data);
             } else {
