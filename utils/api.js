@@ -1,6 +1,4 @@
-import { supabase } from './supabase';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+import { supabase } from '../lib/supabaseClient';
 
 export const loginUser = async (credentials) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -12,7 +10,7 @@ export const loginUser = async (credentials) => {
 
     // Sync to our public.users table (ensures user exists if tables were reset)
     try {
-        await fetch(`${API_URL}/auth/sync`, {
+        await fetch('/api/auth/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -47,7 +45,7 @@ export const registerUser = async (userData) => {
 
     // Sync to our public.users table (optional but recommended for internal relations)
     try {
-        await fetch(`${API_URL}/auth/sync`, {
+        await fetch('/api/auth/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -64,28 +62,65 @@ export const registerUser = async (userData) => {
 };
 
 export const fetchTasks = async (userId) => {
-    const url = userId ? `${API_URL}/tasks?userId=${userId}` : `${API_URL}/tasks`;
-    const response = await fetch(url);
-    return response.json();
+    const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('user_id', userId);
+
+    if (error) {
+        console.error("Error fetching tasks:", error);
+        return [];
+    }
+    return data;
 };
 
 export const createTask = async (taskData) => {
-    const response = await fetch(`${API_URL}/tasks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(taskData),
-    });
-    return response.json();
+    const { data, error } = await supabase
+        .from('tasks')
+        .insert([taskData])
+        .select();
+
+    if (error) {
+        console.error("Error creating task:", error);
+        return { error: error.message };
+    }
+
+    // Trigger timetable refresh after task creation
+    try {
+        await fetch(`/api/timetable/generate?userId=${taskData.user_id}`);
+    } catch (e) {
+        console.error("Error generating timetable:", e);
+    }
+
+    return { id: data[0].id, message: 'Task created successfully' };
 };
 
 export const generateTimetable = async (userId) => {
-    const response = await fetch(`${API_URL}/timetable/generate/${userId}`);
+    const response = await fetch(`/api/timetable/generate?userId=${userId}`);
     return response.json();
 };
 
 export const deleteTask = async (taskId) => {
-    const response = await fetch(`${API_URL}/tasks/${taskId}`, {
-        method: 'DELETE',
-    });
-    return response.json();
+    // Get user_id first to refresh timetable
+    const { data: task } = await supabase.from('tasks').select('user_id').eq('id', taskId).single();
+
+    const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+    if (error) {
+        console.error("Error deleting task:", error);
+        return { error: error.message };
+    }
+
+    if (task) {
+        try {
+            await fetch(`/api/timetable/generate?userId=${task.user_id}`);
+        } catch (e) {
+            console.error("Error generating timetable:", e);
+        }
+    }
+
+    return { message: 'Task deleted successfully' };
 };

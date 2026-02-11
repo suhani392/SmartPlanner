@@ -10,7 +10,12 @@ export default function Timetable() {
     useEffect(() => {
         const loadTimetable = async () => {
             try {
-                const userId = sessionStorage.getItem('userId') || 1;
+                const userId = sessionStorage.getItem('userId');
+                if (!userId) {
+                    console.error("No userId found in session");
+                    setLoading(false);
+                    return;
+                }
                 const result = await generateTimetable(userId);
                 setTimetableData(result.slots || []);
             } catch (err) {
