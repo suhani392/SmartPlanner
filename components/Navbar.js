@@ -41,6 +41,7 @@ export default function Navbar() {
                         <Link href="/dashboard" className="nav-link">Dashboard</Link>
                         <Link href="/tasks" className="nav-link">Tasks</Link>
                         <Link href="/timetable" className="nav-link">Planner</Link>
+                        <Link href="/profile" className="nav-link">Profile</Link>
                         <button
                             onClick={handleLogout}
                             className="logout-btn"

@@ -4,26 +4,20 @@ import TaskList from '../components/TaskList';
 import { fetchTasks, deleteTask } from '../utils/api';
 
 export default function Dashboard() {
-    const [tasks, setTasks] = useState([]);
+    const [allTasks, setAllTasks] = useState([]);
+    const [upcomingTasks, setUpcomingTasks] = useState([]);
+    const [pastTasks, setPastTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userName, setUserName] = useState('User');
 
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-
-        // Use username if available, otherwise use email prefix
         const rawName = user.username || (user.email ? user.email.split('@')[0] : 'User');
-
-        // Capitalize the first letter and handle cases like "suhani.badhe" or "suhani_badhe"
-        const displayName = rawName.split(/[\._ ]/)[0]; // Get the first part before dot, underscore or space
+        const displayName = rawName.split(/[\._ ]/)[0];
         const capitalized = displayName.charAt(0).toUpperCase() + displayName.slice(1).toLowerCase();
-
         setUserName(capitalized);
         loadDashboardData();
     }, []);
-
-    const [allTasks, setAllTasks] = useState([]);
-
 
     const loadDashboardData = async () => {
         try {
@@ -32,27 +26,33 @@ export default function Dashboard() {
             if (Array.isArray(data)) {
                 setAllTasks(data);
 
-                // Sort tasks by date and time
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
                 const sorted = [...data].sort((a, b) => {
                     const dateA = new Date(a.deadline);
                     const dateB = new Date(b.deadline);
                     if (dateA - dateB !== 0) return dateA - dateB;
-
-                    // If same day, sort by start_time
                     const timeA = a.start_time || '23:59';
                     const timeB = b.start_time || '23:59';
                     return timeA.localeCompare(timeB);
                 });
 
-                setTasks(sorted.slice(0, 5));
+                const upcoming = sorted.filter(t => new Date(t.deadline) >= today);
+                const past = sorted.filter(t => new Date(t.deadline) < today).reverse();
+
+                setUpcomingTasks(upcoming.slice(0, 5));
+                setPastTasks(past.slice(0, 5));
             } else {
                 setAllTasks([]);
-                setTasks([]);
+                setUpcomingTasks([]);
+                setPastTasks([]);
             }
         } catch (err) {
             console.error("Dashboard error:", err);
             setAllTasks([]);
-            setTasks([]);
+            setUpcomingTasks([]);
+            setPastTasks([]);
         } finally {
             setLoading(false);
         }
@@ -60,11 +60,10 @@ export default function Dashboard() {
 
     const handleDeleteTask = async (taskId) => {
         if (!confirm("Are you sure you want to delete this task?")) return;
-
         try {
             const response = await deleteTask(taskId);
             if (response && response.message) {
-                loadDashboardData(); // Refresh list on success
+                loadDashboardData();
             } else {
                 alert("Error deleting task: " + (response.error || "Unknown error"));
             }
@@ -84,24 +83,37 @@ export default function Dashboard() {
                 </header>
 
                 <div className="grid">
-                    <section>
-                        <h2>Upcoming Tasks</h2>
-                        {loading ? <p>Loading...</p> : <TaskList tasks={tasks} onDelete={handleDeleteTask} />}
+                    <section style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                        <div>
+                            <h2 style={{ marginBottom: '1.5rem' }}>Upcoming Tasks</h2>
+                            {loading ? <p>Loading...</p> : <TaskList tasks={upcomingTasks} onDelete={handleDeleteTask} />}
+                        </div>
+
+                        {pastTasks.length > 0 && (
+                            <div>
+                                <h2 style={{ marginBottom: '1.5rem', opacity: 0.7 }}>Past Tasks</h2>
+                                <div style={{ opacity: 0.8 }}>
+                                    <TaskList tasks={pastTasks} onDelete={handleDeleteTask} />
+                                </div>
+                            </div>
+                        )}
                     </section>
 
-                    <section className="card" style={{ height: 'fit-content' }}>
-                        <h2>Planner's Summary</h2>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <p><strong>Total Tasks:</strong> {allTasks.length}</p>
-                            <p><strong>High Priority:</strong> {allTasks.filter(t => t.priority === 'High').length}</p>
+                    <section style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                        <div className="card" style={{ height: 'fit-content' }}>
+                            <h2 style={{ marginTop: 0 }}>Planner's Summary</h2>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <p><strong>Total Tasks:</strong> {upcomingTasks.length}</p>
+                                <p><strong>High Priority:</strong> {upcomingTasks.filter(t => t.priority === 'High').length}</p>
+                            </div>
+                            <button
+                                className="btn"
+                                style={{ width: '100%', marginTop: '1rem' }}
+                                onClick={() => window.location.href = '/timetable'}
+                            >
+                                View Full Planner
+                            </button>
                         </div>
-                        <button
-                            className="btn"
-                            style={{ width: '100%', marginTop: '1rem' }}
-                            onClick={() => window.location.href = '/timetable'}
-                        >
-                            View Full Planner
-                        </button>
                     </section>
                 </div>
             </main>

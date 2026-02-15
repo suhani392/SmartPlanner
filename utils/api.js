@@ -124,3 +124,24 @@ export const deleteTask = async (taskId) => {
 
     return { message: 'Task deleted successfully' };
 };
+
+export const updateUserEmail = async (newEmail) => {
+    const { data, error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) return { error: error.message };
+    return { data, message: 'Confirmation link sent to both emails' };
+};
+
+export const updatePassword = async (newPassword) => {
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return { error: error.message };
+    return { data, message: 'Password updated successfully' };
+};
+
+export const updateProfile = async (id, updates) => {
+    const { data, error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', id);
+    if (error) return { error: error.message };
+    return { data, message: 'Profile updated successfully' };
+};

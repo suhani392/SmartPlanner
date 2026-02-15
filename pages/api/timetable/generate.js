@@ -15,12 +15,13 @@ export default async function handler(req, res) {
     const supabaseService = getServiceSupabase();
 
     try {
-        // 1. Fetch user tasks
+        const today = new Date().toISOString().split('T')[0];
         const { data: tasks, error: fetchError } = await supabaseService
             .from('tasks')
             .select('*')
             .eq('user_id', userId)
-            .neq('status', 'Completed');
+            .neq('status', 'Completed')
+            .gte('deadline', today);
 
         if (fetchError) throw fetchError;
 
