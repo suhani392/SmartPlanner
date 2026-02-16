@@ -24,10 +24,9 @@ export default function Navbar() {
                         src={logo.src || logo}
                         alt="Logo"
                         style={{
-                            width: '50px',
-                            height: '50px',
-                            borderRadius: '80%',
-                            objectFit: 'cover'
+                            height: '35px',
+                            width: 'auto',
+                            objectFit: 'contain'
                         }}
                     />
                     <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--primary)', cursor: 'pointer' }}>
