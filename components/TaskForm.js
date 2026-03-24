@@ -15,7 +15,16 @@ export default function TaskForm({ onAdd }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onAdd(formData);
+
+        // Sanitize data: replace empty strings with null for time fields
+        // This prevents "invalid input syntax for type time: \"\"" error in Supabase
+        const taskToSubmit = {
+            ...formData,
+            start_time: formData.start_time || null,
+            end_time: formData.end_time || null
+        };
+
+        onAdd(taskToSubmit);
         setFormData({
             title: '', description: '', deadline: '', priority: 'Medium',
             category: 'College', time_type: 'NA', estimated_hours: 1,
